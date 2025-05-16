@@ -46,9 +46,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     // Shop shop = queryWithPassThrough(id);
 
     // 互斥锁解决缓存击穿
-//    Shop shop = queryWithMutex(id);
-    //逻辑过期
-    Shop shop = queryWithLogicalExpire(id);
+    Shop shop = queryWithMutex(id);
+//    //逻辑过期
+//    Shop shop = queryWithLogicalExpire(id);
 
     if (shop == null) {
       return Result.fail("店铺不存在！");
@@ -67,6 +67,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     // 2 判断是否存在
     if (StrUtil.isBlank(shopJson)) {
       // 3 存在直接返回
+      log.info("存在，直接返回：{}",StrUtil.isBlank(shopJson));
       return null;
     }
     //命中，json反序列化为对象，判断过期时间
@@ -93,12 +94,8 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
           //释放锁
           unlock(lockKey);
         }
-
-
-
       });
     }
-
     return shop;
   }
 
